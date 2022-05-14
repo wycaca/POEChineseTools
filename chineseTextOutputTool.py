@@ -1,29 +1,30 @@
 from ntpath import join
-import sys
+# import sys
 import os
-import chardet
+# import chardet
 
 source_file = "stat_descriptions.txt"
 source_path = os.path.join(os.getcwd(), source_file)
-target_path = os.path.join(os.getcwd(), "提取后的文本.txt")
 split_key_word = "description"
 lang_key_word = "lang \""
 
-def get_encoding(file):
-    with open(file, 'rb') as f:
-        tmp = chardet.detect(f.read(2))
-        return tmp['encoding']
+# def get_encoding(file):
+#     with open(file, 'rb') as f:
+#         tmp = chardet.detect(f.read(2))
+#         return tmp['encoding']
 
 def get_chinese_text(target_chinese_type):
     
-    if (target_chinese_type == "Simplified"):
+    if (target_chinese_type == "S"):
         print("开始提取简体中文文本")
         target_chinese_type = "Simplified Chinese"
-    elif (target_chinese_type == "Traditional"):
-        print("开始提取简体中文文本")
-        target_chinese_type = "Traditional Chinese"
+        target_path = os.path.join(os.getcwd(), "简体中文文本.txt")
+    elif (target_chinese_type == "T"):
+        print("开始提取繁体中文文本")
+        target_chinese_type = "Traditional"
+        target_path = os.path.join(os.getcwd(), "繁体中文文本.txt")
     else:
-        print("输入的中文类型错误, 只能是 Simplified 或者 Traditional !")
+        print("输入的中文类型错误, 只能是 Simplified 或者 Traditional!")
     
     # 拼接 检索目标 字符串
     lang_str = lang_key_word + target_chinese_type + '\"'
@@ -31,9 +32,9 @@ def get_chinese_text(target_chinese_type):
 
     # 读取文件
     # 检测编码
-    encoding_str = get_encoding(source_path)
+    # encoding_str = get_encoding(source_path)
     # encoding_str = 'utf-8'
-    with open(source_path, 'r', encoding = encoding_str) as f:
+    with open(source_path, 'r', encoding = 'utf-16-le') as f:
         data_strs = f.read().splitlines()
 
     # 检查关键字 description
@@ -67,11 +68,11 @@ def get_chinese_text(target_chinese_type):
     delete_index_list = list(set(delete_index_list + lang_index_list))
     # print("删除的索引列表 {}".format(delete_index_list))
     # 输出结果
-    with open(target_path, 'w', encoding=encoding_str) as f:
+    with open(target_path, 'w', encoding='utf-8') as f:
         for i, data_str in enumerate(data_strs):
             if i not in delete_index_list:
                 f.write(data_str + "\n")
 
 
 if __name__ == "__main__":
-    get_chinese_text("Simplified")
+    get_chinese_text("S")
