@@ -77,12 +77,12 @@ def getChineseText(target_chinese_type, source_file):
     data_strs = readFile(source_path)
 
     # 检查关键字 description
-    key_word_count = data_strs.count(split_key_word)
-    if (key_word_count == 0):
-        print("文本内容不正确, 请检查")
-        return
-    else:
-        print("发现 {} 条描述".format(key_word_count + 1))
+    # key_word_count = data_strs.count(split_key_word)
+    # if (key_word_count == 0):
+    #     print("文本内容不正确, 请检查")
+    #     return
+    # else:
+    #     print("发现 {} 条描述".format(key_word_count + 1))
     
     # 记录非中文描述行号
     lang_index_list = getLangIndexList(data_strs, target_chinese_type)
@@ -99,7 +99,7 @@ def getChineseText(target_chinese_type, source_file):
                 data_strs[j + i + 1] = ""
     
     # 输出结果
-    with open(target_path, 'w', encoding='utf-8') as f:
+    with open(target_path, 'w', encoding='utf-16-le') as f:
         for i, data_str in enumerate(data_strs):
             if data_str != "":
                 f.write(data_str + "\n")
