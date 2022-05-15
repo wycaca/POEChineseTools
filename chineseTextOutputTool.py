@@ -18,6 +18,10 @@ def readFile(source_path):
     # 读取文件
     with open(source_path, 'r', encoding = 'utf-16-le') as f:
         data_strs = f.read().splitlines()
+    # for i in range(len(data_strs) - 1, -1, -1):
+    #     data_str = data_strs[i]
+    #     if data_str == "":
+    #         data_strs.remove(data_str)
     return data_strs
 
 
@@ -90,13 +94,15 @@ def getChineseText(target_chinese_type, source_file):
     # 循环 待删索引列表, 目前是每种语言的头一行
     for i in lang_index_list:
         # 下一行, 一般是数字, 对应的描述行数 数字
-        data_str = data_strs[i + 1].lstrip()
-        if data_str.lstrip().isdecimal():
-            des_line_num = int(data_str.lstrip())
-            # print("描述为: {}行".format(des_line_num))
-            data_strs[i + 1] = ""
-            for j in range(des_line_num + 1):
-                data_strs[j + i + 1] = ""
+        if data_strs[i + 1].lstrip().isdecimal():
+            data_str = data_strs[i + 1].lstrip()
+        elif data_str == "":
+            continue
+        des_line_num = int(data_str.lstrip())
+        # print("描述为: {}行".format(des_line_num))
+        data_strs[i + 1] = ""
+        for j in range(des_line_num + 1):
+            data_strs[j + i + 1] = ""
     
     # 输出结果
     with open(target_path, 'w', encoding='utf-16-le') as f:
