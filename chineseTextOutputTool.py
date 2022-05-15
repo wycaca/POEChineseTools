@@ -7,6 +7,8 @@ source_file = "stat_descriptions.txt"
 source_path = os.path.join(os.getcwd(), source_file)
 split_key_word = "description"
 lang_key_word = "lang \""
+type_chinese_simple = "Simplified Chinese"
+type_chinese_traditional = "Traditional Chinese"
 
 # def get_encoding(file):
 #     with open(file, 'rb') as f:
@@ -14,21 +16,23 @@ lang_key_word = "lang \""
 #         return tmp['encoding']
 
 def get_chinese_text(target_chinese_type):
-    
     if (target_chinese_type == "S"):
         print("开始提取简体中文文本")
-        target_chinese_type = "Simplified Chinese"
+        target_chinese_type = type_chinese_simple
         target_path = os.path.join(os.getcwd(), "简体中文文本.txt")
     elif (target_chinese_type == "T"):
         print("开始提取繁体中文文本")
-        target_chinese_type = "Traditional"
+        target_chinese_type = type_chinese_traditional
         target_path = os.path.join(os.getcwd(), "繁体中文文本.txt")
+    elif (target_chinese_type == "ALL"):
+        print("开始提取2种中文文本")
+        target_path = os.path.join(os.getcwd(), "2种中文文本.txt")
     else:
-        print("输入的中文类型错误, 只能是 Simplified 或者 Traditional!")
+        print("输入的中文类型错误, 只能是 Simplified, Traditional 或者 ALL!")
     
     # 拼接 检索目标 字符串
-    lang_str = lang_key_word + target_chinese_type + '\"'
-    print("开始查找目标字符串: {}".format(lang_str))
+    # lang_str = lang_key_word + target_chinese_type + '\"'
+    # print("开始查找目标字符串: {}".format(lang_str))
 
     # 读取文件
     # 检测编码
@@ -51,9 +55,15 @@ def get_chinese_text(target_chinese_type):
     for i, data_str in enumerate(data_strs):
         # 发现 lang
         if data_str.count(lang_key_word) > 0:
-            # 如果不是本次需要的中文, 记录行号
-            if data_str.find(target_chinese_type) == -1:
-                lang_index_list.append(i)
+            # 判断是否为2种中文模式
+            if (target_chinese_type == "ALL"):
+                # 如果不是本次需要的中文, 记录行号
+                if data_str.find(type_chinese_simple) == -1 and data_str.find(type_chinese_traditional) == -1:
+                    lang_index_list.append(i)
+            else:
+                if data_str.find(target_chinese_type) == -1:
+                    lang_index_list.append(i)
+    
     # 循环 待删索引列表, 目前是每种语言的头一行
     for i in lang_index_list:
         # 下一行, 一般是数字, 对应的描述行数 数字
@@ -62,8 +72,9 @@ def get_chinese_text(target_chinese_type):
             des_line_num = int(data_str.lstrip())
             # print("描述为: {}行".format(des_line_num))
             delete_index_list.append(i + 1)
-            for j in range(des_line_num + 2):
+            for j in range(des_line_num + 1):
                 delete_index_list.append(j + i + 1)
+    
     # 将lang 行号添加至 总列表中, 去重
     delete_index_list = list(set(delete_index_list + lang_index_list))
     # print("删除的索引列表 {}".format(delete_index_list))
@@ -75,4 +86,4 @@ def get_chinese_text(target_chinese_type):
 
 
 if __name__ == "__main__":
-    get_chinese_text("S")
+    get_chinese_text("T")
