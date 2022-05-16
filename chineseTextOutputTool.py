@@ -80,29 +80,12 @@ def getChineseText(target_chinese_type, source_file):
     # 读取文件
     data_strs = readFile(source_path)
 
-    # 检查关键字 description
-    # key_word_count = data_strs.count(split_key_word)
-    # if (key_word_count == 0):
-    #     print("文本内容不正确, 请检查")
-    #     return
-    # else:
-    #     print("发现 {} 条描述".format(key_word_count + 1))
-    
     # 记录非中文描述行号
     lang_index_list = getLangIndexList(data_strs, target_chinese_type)
     
     # 循环 待删索引列表, 目前是每种语言的头一行
-    for i in lang_index_list:
-        # 下一行, 一般是数字, 对应的描述行数 数字
-        if data_strs[i + 1].lstrip().isdecimal():
-            data_str = data_strs[i + 1].lstrip()
-        elif data_str == "":
-            continue
-        des_line_num = int(data_str.lstrip())
-        # print("描述为: {}行".format(des_line_num))
-        data_strs[i + 1] = ""
-        for j in range(des_line_num + 1):
-            data_strs[j + i + 1] = ""
+    for i in lang_index_list[::-1]:
+        setEmptyText(i, data_strs)
     
     # 输出结果
     with open(target_path, 'w', encoding='utf-16-le') as f:
@@ -115,6 +98,23 @@ def getChineseText(target_chinese_type, source_file):
 def addEnLang(source_file):
     print("添加英文标识, 开始处理: {}".format(source_file))
     # 得到所有描述行号
+
+
+def setEmptyText(i, data_strs):
+    # 下一行, 一般是数字, 对应的描述行数 数字
+    data_str = data_strs[i + 1].lstrip()
+    # 如果没找到, 往下找一行, 直到找到数字
+    while data_str.isdecimal():
+        des_line_num = int(data_str)
+        # print("描述为: {}行".format(des_line_num))
+        data_strs[i + 1] = ""
+        for j in range(des_line_num + 1):
+            data_strs[j + i + 1] = ""
+        break
+    else:
+        i = i + 1
+        print("未找到描述行数 {}, 尝试+1, 取下一行数据".format(i))
+        setEmptyText(i, data_strs)
 
 
 if __name__ == "__main__":
