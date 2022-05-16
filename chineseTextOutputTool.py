@@ -4,10 +4,9 @@ import os
 
 split_key_word = "description"
 lang_key_word = "lang \""
-type_chinese_simple = "Simplified Chinese"
-type_chinese_traditional = "Traditional Chinese"
-type_english = "English"
-english_lang_key_word = lang_key_word + type_english
+type_chinese_simple = "Simplified"
+type_chinese_traditional = "Traditional"
+english_lang_key_word = "lang \"English\""
 current_path = os.getcwd()
 
 def get_current_path(output_dir):
@@ -30,18 +29,7 @@ def getLangIndexList(data_strs, target_chinese_type):
     lang_index_list = []
     for i, data_str in enumerate(data_strs):
         # 发现 lang
-        if data_str.count(lang_key_word) > 0 and data_str.count(english_lang_key_word) > 0:
-            # 判断是否为2种中文模式
-            if (target_chinese_type == "ALL"):
-                # 如果不是本次需要的中文, 记录行号
-                if data_str.find(type_chinese_simple) == -1 and data_str.find(type_chinese_traditional) == -1 and data_str.find(type_english) == -1:
-                    lang_index_list.append(i)
-                    data_strs[i] = ""
-            else:
-                if data_str.find(target_chinese_type) == -1 and data_str.find(type_english) == -1:
-                    lang_index_list.append(i)
-                    data_strs[i] = ""
-        elif data_str.count(lang_key_word) > 0:
+        if data_str.count(lang_key_word) > 0:
             # 判断是否为2种中文模式
             if (target_chinese_type == "ALL"):
                 # 如果不是本次需要的中文, 记录行号
@@ -84,7 +72,7 @@ def getChineseText(target_chinese_type, source_file):
     lang_index_list = getLangIndexList(data_strs, target_chinese_type)
     
     # 循环 待删索引列表, 目前是每种语言的头一行
-    for i in lang_index_list[::-1]:
+    for i in lang_index_list:
         setEmptyText(i, data_strs)
     
     # 输出结果
@@ -102,7 +90,7 @@ def addEnLang(source_file):
 
 def setEmptyText(i, data_strs):
     # 下一行, 一般是数字, 对应的描述行数 数字
-    data_str = data_strs[i + 1].lstrip()
+    data_str = data_strs[i + 1].replace('\n', '').replace('\t', '').lstrip()
     # 如果没找到, 往下找一行, 直到找到数字
     while data_str.isdecimal():
         des_line_num = int(data_str)
@@ -120,7 +108,7 @@ def setEmptyText(i, data_strs):
 if __name__ == "__main__":
     argv_len = len(sys.argv)
     # 设置默认值
-    chinese_type = "ALL"
+    chinese_type = "T"
     add_lang = 0
     if argv_len >= 2:
         chinese_type = sys.argv[1]
