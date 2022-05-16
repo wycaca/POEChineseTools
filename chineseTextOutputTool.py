@@ -86,6 +86,7 @@ def getChineseText(target_chinese_type, source_file):
 def addEnLang(source_file):
     print("添加英文标识, 开始处理: {}".format(source_file))
     # 得到所有描述行号
+    # 倒序循环, 添加英文描述标识
 
 
 def setEmptyText(i, data_strs):
@@ -117,7 +118,7 @@ if __name__ == "__main__":
 
     for file in os.listdir(os.getcwd()):
         if file.endswith(".txt"):
-            getChineseText(chinese_type, file)
-            if add_lang != None and add_lang == 1:
-                addEnLang(file)
+            new_file = getChineseText(chinese_type, file)
+            if add_lang == 1:
+                addEnLang(new_file)
     print("全部 处理完成")
